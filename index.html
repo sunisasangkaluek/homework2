@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodLink | เชื่อมโยงส่วนเกินอาหารสู่ชุมชน (แก้ปัญหาขยะอาหารและภาวะความยากจน)</title>
+  <meta name="description" content="แพลตฟอร์มตัวกลางเชื่อมโยงร้านอาหาร ซูเปอร์มาร์เก็ต และโรงแรม เพื่อส่งต่ออาหารส่วนเกินคุณภาพดีสู่มูลนิธิ ศูนย์พักพิง และชุมชนรอบข้างแบบเรียลไทม์">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top Real-Time Notification Bar -->
+  <div class="live-ticker-bar" role="region" aria-label="สถานะระบบเรียลไทม์">
+    <div class="container ticker-inner">
+      <div class="live-indicator">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span class="live-label">LIVE FEED</span>
+      </div>
+      <div class="ticker-message" id="liveTickerMessage" aria-live="polite">
+        กำลังเชื่อมต่อข้อมูลอาหารส่วนเกินแบบเรียลไทม์ในพื้นที่ของคุณ...
+      </div>
+      <div class="ticker-controls">
+        <label class="sim-toggle" title="จำลองการอัปเดตประกาศอาหารใหม่แบบเรียลไทม์">
+          <input type="checkbox" id="realtimeSimToggle" checked>
+          <span class="sim-slider"></span>
+          <span class="sim-text">จำลองเรียลไทม์อัตโนมัติ</span>
+        </label>
+        <button type="button" class="btn-trigger-sim" id="triggerSimNowBtn" title="จำลองร้านค้าลงประกาศใหม่ทันที">
+          ⚡ จำลองร้านค้าโพสต์ใหม่
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header / Navbar -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="brand-logo" aria-label="FoodLink หน้าแรก">
+        <div class="logo-icon" aria-hidden="true">🌱</div>
+        <div class="logo-text">
+          <span class="brand-name">Food<span class="brand-accent">Link</span></span>
+          <span class="brand-tagline">เชื่อมโยงส่วนเกินอาหารสู่ชุมชน</span>
+        </div>
+      </a>
+
+      <!-- Role / Perspective Switcher -->
+      <div class="role-switcher" role="group" aria-label="เลือกบทบาทการใช้งาน">
+        <button type="button" class="role-btn active" data-role="community" id="roleCommunityBtn">
+          <span class="role-icon" aria-hidden="true">🍲</span>
+          <span class="role-info">
+            <strong>ชุมชน / ผู้รับอาหาร</strong>
+            <small>ประชาชนทั่วไป</small>
+          </span>
+        </button>
+        <button type="button" class="role-btn" data-role="foundation" id="roleFoundationBtn">
+          <span class="role-icon" aria-hidden="true">🏠</span>
+          <span class="role-info">
+            <strong>มูลนิธิ / ศูนย์พักพิง</strong>
+            <small>รับบริจาคล็อตใหญ่</small>
+          </span>
+        </button>
+        <button type="button" class="role-btn" data-role="partner" id="rolePartnerBtn">
+          <span class="role-icon" aria-hidden="true">🏪</span>
+          <span class="role-info">
+            <strong>ร้านค้า / โรงแรม</strong>
+            <small>ลงประกาศอาหาร</small>
+          </span>
+        </button>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <button type="button" class="btn btn-secondary btn-tickets" id="openMyClaimsBtn" aria-label="ดูรายการจองรับอาหารของฉัน">
+          <span aria-hidden="true">🎟️</span>
+          <span>คูปองรับอาหาร</span>
+          <span class="badge-count" id="myClaimsCount">0</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="openPostModalBtn">
+          <span aria-hidden="true">➕</span>
+          <span>ลงประกาศอาหารส่วนเกิน</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero & Real-time Impact Dashboard -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="hero-pill">
+              <span class="pill-badge">Zero Food Waste × Zero Hunger</span>
+              <span>เปลี่ยนอาหารส่วนเกินคุณภาพดี ให้เป็นมื้ออิ่มของชุมชน</span>
+            </div>
+            <h1 class="hero-title">
+              อย่าปล่อยให้อาหารดีๆ กลายเป็นขยะ<br>
+              <span class="text-gradient">ส่งต่อความอิ่มอร่อยสู่คนรอบข้าง</span>
+            </h1>
+            <p class="hero-subtitle">
+              แพลตฟอร์มตัวกลางเชื่อมโยง <strong>ร้านอาหาร ซูเปอร์มาร์เก็ต และโรงแรม</strong> ที่มีอาหารคุณภาพดีแต่จำหน่ายไม่หมดในแต่ละวัน ให้สามารถแจกจ่ายฟรีแก่มูลนิธิ ศูนย์พักพิง หรือจำหน่ายราคาย่อมเยา (ลด 50–80%) แก่ประชาชนในชุมชนแบบเรียลไทม์
+            </p>
+            <div class="hero-cta-group">
+              <a href="#marketplaceSection" class="btn btn-primary btn-lg">
+                🔍 ค้นหาอาหารใกล้ฉันตอนนี้
+              </a>
+              <button type="button" class="btn btn-outline btn-lg" id="heroPostFoodBtn">
+                🤝 ร่วมเป็นพาร์ทเนอร์แบ่งปันอาหาร
+              </button>
+            </div>
+
+            <!-- Active Role Banner -->
+            <div class="active-role-banner" id="activeRoleBanner">
+              <span class="role-banner-icon" id="roleBannerIcon">🍲</span>
+              <div class="role-banner-text">
+                <strong id="roleBannerTitle">คุณกำลังใช้งานในโหมด: ประชาชนในชุมชน</strong>
+                <p id="roleBannerDesc">สามารถจองรับอาหารแจกฟรีสำหรับชุมชน และซื้ออาหารลดราคาพิเศษ 50-80% จากร้านค้าใกล้บ้าน</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Impact Stats Card -->
+          <div class="impact-dashboard" aria-label="สถิติการลดขยะอาหารและช่วยเหลือสังคม">
+            <div class="impact-header">
+              <div>
+                <h2 class="impact-title">🌍 ผลลัพธ์ความยั่งยืนวันนี้</h2>
+                <p class="impact-subtitle">ข้อมูลสะสมแบบเรียลไทม์จากเครือข่าย FoodLink</p>
+              </div>
+              <span class="impact-live-tag">อัปเดตสด</span>
+            </div>
+
+            <div class="impact-stats-grid">
+              <div class="stat-card stat-emerald">
+                <div class="stat-icon" aria-hidden="true">🍱</div>
+                <div class="stat-data">
+                  <span class="stat-value" id="statMealsRescued">14,820</span>
+                  <span class="stat-unit">มื้ออาหาร</span>
+                </div>
+                <p class="stat-label">ถูกส่งต่อแทนการทิ้งเป็นขยะ</p>
+              </div>
+
+              <div class="stat-card stat-amber">
+                <div class="stat-icon" aria-hidden="true">⚖️</div>
+                <div class="stat-data">
+                  <span class="stat-value" id="statFoodSavedKg">5,928</span>
+                  <span class="stat-unit">กิโลกรัม</span>
+                </div>
+                <p class="stat-label">ปริมาณขยะอาหารที่ลดได้จริง</p>
+              </div>
+
+              <div class="stat-card stat-sky">
+                <div class="stat-icon" aria-hidden="true">☁️</div>
+                <div class="stat-data">
+                  <span class="stat-value" id="statCo2Saved">14,997</span>
+                  <span class="stat-unit">kg CO₂e</span>
+                </div>
+                <p class="stat-label">ลดก๊าซเรือนกระจกจากการฝังกลบ</p>
+              </div>
+
+              <div class="stat-card stat-rose">
+                <div class="stat-icon" aria-hidden="true">💛</div>
+                <div class="stat-data">
+                  <span class="stat-value" id="statMoneySaved">฿892,450</span>
+                  <span class="stat-unit">บาท</span>
+                </div>
+                <p class="stat-label">ลดค่าครองชีพชุมชนและมูลนิธิ</p>
+              </div>
+            </div>
+
+            <div class="impact-footer">
+              <div class="urgent-need-mini">
+                <span class="urgent-badge">ด่วน</span>
+                <span><strong>ศูนย์พักพิงบ้านอิ่มใจ (ดินแดง)</strong> กำลังต้องการอาหารปรุงสุกอีก <strong>35 กล่อง</strong> สำหรับมื้อค่ำวันนี้</span>
+              </div>
+              <a href="#foundationSection" class="impact-link">ดูความต้องการมูลนิธิทั้งหมด →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Marketplace & Real-Time Radar Section -->
+    <section class="marketplace-section" id="marketplaceSection">
+      <div class="container">
+        <!-- Section Header & Location Selector -->
+        <div class="section-header-bar">
+          <div>
+            <h2 class="section-title">📍 พิกัดอาหารส่วนเกินพร้อมรับแบบเรียลไทม์</h2>
+            <p class="section-subtitle">ตรวจสอบคุณภาพแล้ว • รับได้ที่หน้าร้านหรือประสานงานอาสาสมัครจัดส่งสู่มูลนิธิ</p>
+          </div>
+          <div class="location-picker">
+            <label for="areaFilterSelect" class="sr-only">เลือกพื้นที่ของคุณ</label>
+            <span class="loc-pin" aria-hidden="true">📌</span>
+            <select id="areaFilterSelect" class="area-select">
+              <option value="all">ทุกพื้นที่ในกรุงเทพฯ และปริมณฑล (รัศมี 10 กม.)</option>
+              <option value="ปทุมวัน / สยาม / สีลม">ปทุมวัน / สยาม / สีลม</option>
+              <option value="ดินแดง / ห้วยขวาง / พระราม 9">ดินแดง / ห้วยขวาง / พระราม 9</option>
+              <option value="คลองเตย / สุขุมวิท">คลองเตย / สุขุมวิท</option>
+              <option value="จตุจักร / ลาดพร้าว / บางซื่อ">จตุจักร / ลาดพร้าว / บางซื่อ</option>
+              <option value="ธนบุรี / คลองสาน / บางกอกน้อย">ธนบุรี / คลองสาน / บางกอกน้อย</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="filter-toolbar" role="search" aria-label="ค้นหาและกรองรายการอาหาร">
+          <div class="search-box">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="searchInput" placeholder="ค้นหาชื่ออาหาร, ร้านอาหาร, โรงแรม, ซูเปอร์มาร์เก็ต..." autocomplete="off">
+          </div>
+
+          <div class="filter-pills-group" role="group" aria-label="กรองตามประเภทราคา">
+            <button type="button" class="filter-pill active" data-price-filter="all">ทั้งหมด</button>
+            <button type="button" class="filter-pill pill-free" data-price-filter="free">🎁 แจกฟรี (บริจาค)</button>
+            <button type="button" class="filter-pill pill-discount" data-price-filter="discount">🏷️ ราคาประหยัด (ลด 50-80%)</button>
+            <button type="button" class="filter-pill pill-foundation" data-price-filter="foundation">🏠 สำหรับมูลนิธิ/ศูนย์พักพิง</button>
+          </div>
+
+          <div class="secondary-filters">
+            <div class="category-tabs" role="group" aria-label="กรองตามประเภทร้านค้า">
+              <button type="button" class="cat-tab active" data-cat="all">ทุกหมวดหมู่</button>
+              <button type="button" class="cat-tab" data-cat="restaurant">🍱 ร้านอาหาร & คาเฟ่</button>
+              <button type="button" class="cat-tab" data-cat="supermarket">🛒 ซูเปอร์มาร์เก็ต</button>
+              <button type="button" class="cat-tab" data-cat="hotel">🏨 โรงแรม & บุฟเฟต์</button>
+              <button type="button" class="cat-tab" data-cat="bakery">🥐 เบเกอรี่ & ขนมปัง</button>
+            </div>
+
+            <div class="dietary-and-sort">
+              <label class="checkbox-filter">
+                <input type="checkbox" id="filterHalal">
+                <span>ฮาลาล (Halal)</span>
+              </label>
+              <label class="checkbox-filter">
+                <input type="checkbox" id="filterVeg">
+                <span>มังสวิรัติ/เจ</span>
+              </label>
+              <select id="sortSelect" class="sort-select" aria-label="เรียงลำดับรายการ">
+                <option value="urgent">⏰ ใกล้หมดเวลารับก่อน</option>
+                <option value="distance">📍 ระยะทางใกล้ฉันที่สุด</option>
+                <option value="priceAsc">💚 แจกฟรี / ราคาต่ำสุดก่อน</option>
+                <option value="quantityDesc">📦 ปริมาณคงเหลือมากสุด</option>
+              </select>
+              <button type="button" class="btn-toggle-map" id="toggleMapBtn" aria-expanded="true">
+                🗺️ ซ่อน/แสดงเรดาร์แผนที่
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Community Food Radar Map (Collapsible) -->
+        <div class="radar-map-container" id="radarMapContainer">
+          <div class="radar-map-visual" id="radarMapVisual" role="region" aria-label="แผนที่เรดาร์แสดงพิกัดอาหารส่วนเกินและศูนย์พักพิง">
+            <div class="radar-grid-lines" aria-hidden="true"></div>
+            <div class="radar-sweep" aria-hidden="true"></div>
+            <div class="user-center-pin" title="ตำแหน่งปัจจุบันของคุณ">
+              <span class="user-dot"></span>
+              <span class="user-label">คุณอยู่ที่นี่</span>
+            </div>
+            <!-- Pins dynamically rendered via JS -->
+            <div id="mapPinsLayer"></div>
+          </div>
+          <div class="radar-legend">
+            <div class="legend-items">
+              <span class="legend-item"><span class="pin-dot dot-free"></span> แจกฟรี (ชุมชน/มูลนิธิ)</span>
+              <span class="legend-item"><span class="pin-dot dot-discount"></span> ลดราคาพิเศษ 50-80%</span>
+              <span class="legend-item"><span class="pin-dot dot-shelter"></span> มูลนิธิ / ศูนย์พักพิงที่ต้องการอาหาร</span>
+            </div>
+            <div class="radar-selected-info" id="radarSelectedInfo">
+              คลิกที่หมุดบนแผนที่เพื่อดูรายละเอียดและจองรับอาหารได้ทันที
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Status Bar -->
+        <div class="results-bar">
+          <p id="resultsCountText">กำลังแสดงรายการอาหารทั้งหมด...</p>
+          <button type="button" class="btn-reset-filters" id="resetFiltersBtn" hidden>ล้างตัวกรองทั้งหมด ✕</button>
+        </div>
+
+        <!-- Food Listings Grid -->
+        <div class="listings-grid" id="foodListingsGrid" aria-live="polite">
+          <!-- Rendered by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Foundations & Shelters Needs Section -->
+    <section class="foundation-section" id="foundationSection">
+      <div class="container">
+        <div class="section-header-bar">
+          <div>
+            <span class="section-eyebrow">COMMUNITY SHELTERS & FOUNDATIONS</span>
+            <h2 class="section-title">🏠 ศูนย์พักพิงและมูลนิธิที่กำลังต้องการอาหารวันนี้</h2>
+            <p class="section-subtitle">
+              ร้านอาหาร โรงแรม และซูเปอร์มาร์เก็ต สามารถกด <strong>"ส่งมอบอาหารให้ศูนย์นี้"</strong> เพื่อจับคู่อาหารส่วนเกินล็อตใหญ่ได้โดยตรง พร้อมใบสำคัญรับบริจาคเพื่อลดหย่อนภาษี
+            </p>
+          </div>
+          <div class="volunteer-callout">
+            <span class="vol-icon" aria-hidden="true">🛵</span>
+            <div>
+              <strong>มีอาสาสมัคร FoodLink Rider พร้อมรับ-ส่งฟรี!</strong>
+              <p>สำหรับร้านค้าที่ไม่สะดวกจัดส่งเอง อาสาสมัครในพื้นที่พร้อมช่วยรับอาหารไปส่งถึงมูลนิธิภายใน 45 นาที</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="shelters-grid" id="sheltersGrid">
+          <!-- Rendered by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works & Safety Standards Section -->
+    <section class="how-it-works-section">
+      <div class="container">
+        <div class="how-header">
+          <h2 class="section-title">✨ ระบบ FoodLink ทำงานอย่างไรให้ปลอดภัยและยั่งยืน?</h2>
+          <p class="section-subtitle">มาตรฐานความปลอดภัยทางอาหาร (Food Safety) และการกระจายสู่ผู้ที่ต้องการจริงอย่างโปร่งใส</p>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-num">01</div>
+            <h3>🏪 ร้านค้า/โรงแรม คัดแยกอาหารดี</h3>
+            <p>เมื่อใกล้เวลาปิดร้าน พาร์ทเนอร์จะคัดแยกอาหารที่ปรุงสุกใหม่ในวันนั้น หรือวัตถุดิบที่ยังไม่หมดอายุ (Best Before) ลงประกาศพร้อมระบุเวลาสิ้นสุดการรับและข้อมูลสารก่อภูมิแพ้</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-num">02</div>
+            <h3>📲 แจ้งเตือนเรียลไทม์ในรัศมี 5-10 กม.</h3>
+            <p>ระบบจับคู่พิกัดอัตโนมัติ มูลนิธิสามารถจองรับบริจาคล็อตใหญ่ (Bulk Donation) และประชาชนในชุมชนสามารถจองสิทธิ์รับฟรีหรือซื้อ Mystery Box ลดสูงสุด 80%</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-num">03</div>
+            <h3>🎟️ สแกน QR รับอาหาร / อาสาสมัครจัดส่ง</h3>
+            <p>ผู้จองแสดงรหัสรับอาหาร (Pickup Code) ที่หน้าร้านตามเวลาที่กำหนด หรือเรียกใช้เครือข่ายอาสาสมัคร FoodLink Rider เพื่อส่งตรงถึงศูนย์พักพิงและชุมชน</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-num">04</div>
+            <h3>🌱 วัดผลลดคาร์บอน & ลดความเหลื่อมล้ำ</h3>
+            <p>ทุกมื้อที่ส่งต่อจะถูกคำนวณเป็นปริมาณขยะอาหารและก๊าซคาร์บอนไดออกไซด์ที่ลดได้จริง พร้อมรายงาน ESG Impact สำหรับองค์กรพาร์ทเนอร์</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="brand-logo">
+          <div class="logo-icon" aria-hidden="true">🌱</div>
+          <div class="logo-text">
+            <span class="brand-name">Food<span class="brand-accent">Link</span></span>
+            <span class="brand-tagline">เชื่อมโยงส่วนเกินอาหารสู่ชุมชน</span>
+          </div>
+        </div>
+        <p class="footer-desc">
+          ร่วมขับเคลื่อนเป้าหมายการพัฒนาที่ยั่งยืน (SDGs Goal 2: Zero Hunger & Goal 12: Responsible Consumption and Production) เพื่อสังคมไทยไร้ขยะอาหารและทุกคนอิ่มท้อง
+        </p>
+      </div>
+      <div class="footer-actions">
+        <button type="button" class="btn btn-outline btn-sm" id="resetDemoDataBtn">
+          🔄 รีเซ็ตข้อมูลตัวอย่างเริ่มต้น
+        </button>
+        <p class="copyright">© 2026 FoodLink Thailand Platform — เพื่อชุมชนและสิ่งแวดล้อม</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       MODAL 1: CLAIM / RESERVE FOOD DIALOG
+       ========================================================= -->
+  <dialog class="app-dialog" id="claimFoodDialog" aria-labelledby="claimDialogTitle">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h3 id="claimDialogTitle">🍲 จองสิทธิ์รับอาหารส่วนเกิน</h3>
+        <button type="button" class="btn-close-dialog" data-close-dialog="claimFoodDialog" aria-label="ปิดหน้าต่าง">✕</button>
+      </div>
+      <form id="claimFoodForm" class="dialog-body">
+        <input type="hidden" id="claimItemId">
+        <div class="claim-item-summary" id="claimItemSummary">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="claimRecipientType">ประเภทผู้รับอาหาร <span class="req">*</span></label>
+            <select id="claimRecipientType" required>
+              <option value="ประชาชนทั่วไปในชุมชน">🍲 ประชาชนทั่วไปในชุมชน</option>
+              <option value="ตัวแทนมูลนิธิ / ศูนย์พักพิง">🏠 ตัวแทนมูลนิธิ / ศูนย์พักพิง</option>
+              <option value="อาสาสมัครผู้นำชุมชน">🛵 อาสาสมัครผู้นำชุมชน (รับแทนผู้ป่วยติดเตียง/ผู้สูงอายุ)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="claimQuantity">จำนวนที่ต้องการรับ <span class="req">*</span></label>
+            <div class="qty-selector">
+              <button type="button" class="qty-btn" id="qtyMinusBtn" aria-label="ลดจำนวน">−</button>
+              <input type="number" id="claimQuantity" min="1" max="50" value="1" required>
+              <button type="button" class="qty-btn" id="qtyPlusBtn" aria-label="เพิ่มจำนวน">+</button>
+            </div>
+            <small class="field-hint" id="claimQtyHint">จำกัดสูงสุดตามสิทธิ์เพื่อกระจายให้ทั่วถึง</small>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="claimUserName">ชื่อผู้ติดต่อ / ชื่อมูลนิธิ <span class="req">*</span></label>
+            <input type="text" id="claimUserName" required placeholder="เช่น คุณสมชาย หรือ มูลนิธิบ้านอิ่มใจ">
+          </div>
+          <div class="form-group">
+            <label for="claimUserPhone">เบอร์โทรศัพท์ติดต่อ <span class="req">*</span></label>
+            <input type="tel" id="claimUserPhone" required pattern="[0-9\-]{9,13}" placeholder="เช่น 081-234-5678">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="claimDeliveryMethod">รูปแบบการรับอาหาร</label>
+          <select id="claimDeliveryMethod">
+            <option value="รับด้วยตนเองที่หน้าร้าน (Self Pick-up)">🚶 รับด้วยตนเองที่หน้าร้านตามเวลาที่กำหนด (ไม่มีค่าธรรมเนียม)</option>
+            <option value="ประสานอาสาสมัคร FoodLink Rider (สำหรับมูลนิธิ/ผู้เปราะบาง)">🛵 ประสานอาสาสมัคร FoodLink Rider จัดส่งให้ (สำหรับมูลนิธิ/ผู้สูงอายุ)</option>
+          </select>
+        </div>
+
+        <div class="safety-pledge">
+          <label class="checkbox-label">
+            <input type="checkbox" id="claimSafetyAgree" required checked>
+            <span>ฉันรับทราบว่าควรรับประทานอาหารภายในเวลาที่ร้านค้าแนะนำ และจะเดินทางไปรับตามเวลาที่นัดหมายเพื่อไม่ให้เกิดขยะอาหาร</span>
+          </label>
+        </div>
+
+        <div class="claim-price-summary" id="claimPriceSummary">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="dialog-footer">
+          <button type="button" class="btn btn-outline" data-close-dialog="claimFoodDialog">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary" id="confirmClaimSubmitBtn">✅ ยืนยันการจองและรับคูปอง QR</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- =========================================================
+       MODAL 2: POST NEW SURPLUS FOOD (FOR MERCHANTS/HOTELS)
+       ========================================================= -->
+  <dialog class="app-dialog dialog-lg" id="postFoodDialog" aria-labelledby="postDialogTitle">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <div>
+          <h3 id="postDialogTitle">🏪 ลงประกาศส่งต่ออาหารส่วนเกิน (เรียลไทม์)</h3>
+          <p class="dialog-subtitle">เปลี่ยนอาหารที่ขายไม่หมดในวันนี้ ให้เป็นมื้อสำคัญของชุมชนและมูลนิธิ</p>
+        </div>
+        <button type="button" class="btn-close-dialog" data-close-dialog="postFoodDialog" aria-label="ปิดหน้าต่าง">✕</button>
+      </div>
+
+      <form id="postFoodForm" class="dialog-body">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="postStoreName">ชื่อร้านอาหาร / โรงแรม / ซูเปอร์มาร์เก็ต <span class="req">*</span></label>
+            <input type="text" id="postStoreName" required placeholder="เช่น ห้องอาหารเดอะเทอเรซ โรงแรมแกรนด์">
+          </div>
+          <div class="form-group">
+            <label for="postStoreCategory">ประเภทร้านค้า <span class="req">*</span></label>
+            <select id="postStoreCategory" required>
+              <option value="restaurant">🍱 ร้านอาหาร & คาเฟ่</option>
+              <option value="supermarket">🛒 ซูเปอร์มาร์เก็ต & มินิมาร์ท</option>
+              <option value="hotel">🏨 โรงแรม & บุฟเฟต์</option>
+              <option value="bakery">🥐 เบเกอรี่ & ขนมปัง</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="postTitle">ชื่อชุดอาหาร / รายการอาหาร <span class="req">*</span></label>
+            <input type="text" id="postTitle" required placeholder="เช่น ข้าวกล่องปรุงสุกพร้อมทาน 20 กล่อง หรือ ชุดเบเกอรี่อบสด">
+          </div>
+          <div class="form-group">
+            <label for="postArea">ย่าน / พื้นที่ตั้งร้าน <span class="req">*</span></label>
+            <select id="postArea" required>
+              <option value="ปทุมวัน / สยาม / สีลม">ปทุมวัน / สยาม / สีลม</option>
+              <option value="ดินแดง / ห้วยขวาง / พระราม 9">ดินแดง / ห้วยขวาง / พระราม 9</option>
+              <option value="คลองเตย / สุขุมวิท">คลองเตย / สุขุมวิท</option>
+              <option value="จตุจักร / ลาดพร้าว / บางซื่อ">จตุจักร / ลาดพร้าว / บางซื่อ</option>
+              <option value="ธนบุรี / คลองสาน / บางกอกน้อย">ธนบุรี / คลองสาน / บางกอกน้อย</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="postDescription">รายละเอียดอาหารและการเก็บรักษา <span class="req">*</span></label>
+          <textarea id="postDescription" rows="2" required placeholder="ระบุรายการอาหารข้างใน เวลาที่ปรุงเสร็จ และคำแนะนำในการอุ่นหรือรับประทาน..."></textarea>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label for="postOfferType">รูปแบบการส่งต่อ <span class="req">*</span></label>
+            <select id="postOfferType" required>
+              <option value="free">🎁 แจกฟรี (บริจาคให้ชุมชน/มูลนิธิ)</option>
+              <option value="foundation_only">🏠 บริจาคล็อตใหญ่เฉพาะมูลนิธิ/ศูนย์พักพิง</option>
+              <option value="discount">🏷️ จำหน่ายราคาย่อมเยา (ลด 50-80%)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="postOriginalPrice">มูลค่าปกติต่อชุด (บาท) <span class="req">*</span></label>
+            <input type="number" id="postOriginalPrice" min="10" max="5000" value="120" required>
+          </div>
+          <div class="form-group" id="postSalePriceGroup">
+            <label for="postSalePrice">ราคาที่จำหน่าย (บาท)</label>
+            <input type="number" id="postSalePrice" min="0" max="2500" value="0" disabled>
+            <small class="field-hint" id="postPriceHint">แจกฟรี (0 บาท)</small>
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label for="postQuantity">จำนวนที่เปิดรับ (ชุด/กล่อง) <span class="req">*</span></label>
+            <input type="number" id="postQuantity" min="1" max="500" value="15" required>
+          </div>
+          <div class="form-group">
+            <label for="postUnitWeight">น้ำหนักโดยประมาณต่อชุด (กก.)</label>
+            <input type="number" id="postUnitWeight" step="0.1" min="0.1" max="20" value="0.4" required>
+          </div>
+          <div class="form-group">
+            <label for="postPickupUntil">รับได้ถึงเวลา <span class="req">*</span></label>
+            <input type="time" id="postPickupUntil" value="23:30" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>ข้อมูลโภชนาการและข้อจำกัดทางอาหาร (เลือกได้มากกว่า 1 ข้อ)</label>
+          <div class="checkbox-tags-row">
+            <label class="tag-check"><input type="checkbox" name="dietTags" value="ปรุงสุกพร้อมทาน" checked> <span>🍲 ปรุงสุกพร้อมทาน</span></label>
+            <label class="tag-check"><input type="checkbox" name="dietTags" value="ฮาลาล (Halal)"> <span>🌙 ฮาลาล (Halal)</span></label>
+            <label class="tag-check"><input type="checkbox" name="dietTags" value="มังสวิรัติ/เจ"> <span>🥬 มังสวิรัติ/เจ</span></label>
+            <label class="tag-check"><input type="checkbox" name="dietTags" value="วัตถุดิบสด"> <span>🥦 วัตถุดิบสด</span></label>
+            <label class="tag-check"><input type="checkbox" name="dietTags" value="มีส่วนผสมของนม/ไข่"> <span>🥛 มีส่วนผสมของนม/ไข่</span></label>
+          </div>
+        </div>
+
+        <input type="hidden" id="postMatchedShelterId" value="">
+        <div class="matched-shelter-banner" id="matchedShelterBanner" hidden>
+          <span>🎯 กำลังสร้างรายการส่งมอบตรงให้: <strong id="matchedShelterName"></strong></span>
+          <button type="button" class="btn-clear-shelter" id="clearMatchedShelterBtn">ยกเลิกการระบุเฉพาะเจาะจง</button>
+        </div>
+
+        <div class="dialog-footer">
+          <button type="button" class="btn btn-outline" data-close-dialog="postFoodDialog">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary">🚀 เผยแพร่ประกาศแบบเรียลไทม์ทันที</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- =========================================================
+       MODAL 3: MY CLAIMED COUPONS / QR PICKUP PASSES
+       ========================================================= -->
+  <dialog class="app-dialog dialog-lg" id="myClaimsDialog" aria-labelledby="myClaimsTitle">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <div>
+          <h3 id="myClaimsTitle">🎟️ คูปองรับอาหารและประวัติการส่งต่อของฉัน</h3>
+          <p class="dialog-subtitle">แสดงรหัส QR Code นี้แก่พนักงานที่หน้าร้าน หรือส่งให้อาสาสมัคร FoodLink Rider</p>
+        </div>
+        <button type="button" class="btn-close-dialog" data-close-dialog="myClaimsDialog" aria-label="ปิดหน้าต่าง">✕</button>
+      </div>
+      <div class="dialog-body">
+        <div id="myClaimsListContainer" class="claims-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-primary" data-close-dialog="myClaimsDialog">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
